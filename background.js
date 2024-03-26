@@ -108,65 +108,21 @@ async function createGroupReal(tab, groups, currentWindow) {
         }
     }
     else if (extensionTypeDefault == "tab") {
-        const domain = getDomain(tab);
-        //检查是否有旧group
-        const nowGroup = groups.find(a => a.title == "default");
-        if (nowGroup == undefined) {
+        const defaultGroup = groups.find(a => a.title == "default");
+        if (defaultGroup == undefined) {
             createDefaultGroup(currentWindow, tab);
             return;
         }
-        try {
-            //新标签页直接分组
-            if (tab.url.startsWith("edge://newtab") || tab.url.startsWith("chrome://newtab")) {
-                await chrome.tabs.group({
-                    groupId: nowGroup.id,
-                    tabIds: tab.id
-                })
-                return
-            }
-            // else {
-            //     let openerTab = await chrome.tabs.get(tab.openerTabId);
-            //     //打开标签的标签没有组
-            //     if (tab.openerTabId == undefined || openerTab.pinned) {
-            //         //创建组
-            //         await chrome.tabs.group({
-            //             groupId: nowGroup.id,
-            //             tabIds: tab.id
-            //         })
-            //     }
-            //     else {
-            //         //如果打开的标签页
-
-            //         //查询之前标签页信息
-            //         let openerTab = await chrome.tabs.get(tab.openerTabId);
-            //         //判断是否有组
-            //         if (openerTab.groupId == -1) {
-            //             //创建组
-            //             await createDefaultGroup(currentWindow, openerTab);
-            //             //设置打开的标签页的分组
-            //             openerTab = await chrome.tabs.get(tab.openerTabId);
-            //             await chrome.tabs.group({
-            //                 groupId: openerTab.groupId,
-            //                 tabIds: tab.id
-            //             })
-            //         }
-            //         else {
-            //             //设定组
-            //             await chrome.tabs.group({
-            //                 groupId: openerTab.groupId,
-            //                 tabIds: tab.id
-            //             })
-            //         }
-
-
-            //     }
-            // }
-        } catch (e) {
-            console.error(e)
+        if (tab.groupId == -1) {
+            await chrome.tabs.group({
+                groupId: defaultGroup.id,
+                tabIds: tab.id
+            });
+            return;
         }
     }
-
 }
+
 async function realCreateGroup(currentWindow, tab) {
     const domain = getDomain(tab);
     let groupId = await chrome.tabs.group({
