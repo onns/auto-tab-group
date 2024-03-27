@@ -30,8 +30,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 chrome.tabs.onCreated.addListener(function (tab) {
-    setGroup(tab);
+    if (tab.groupId != -1) {
+        setGroup(tab);
+    }
 })
+
 /**
  * 监听tab页面变化(用于处理页面logo问题)
  */
